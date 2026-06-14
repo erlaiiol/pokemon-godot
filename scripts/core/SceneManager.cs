@@ -113,7 +113,7 @@ namespace pokemonGodot.Scripts.Core
 			}
 		
 			 var spawnPoint = (SpawnPoint)spawnPoints[0];
-			 var player = GD.Load<PackedScene>($"res://scenes/characters/player.tscn").Instantiate<Player>();
+			 var player = GD.Load<PackedScene>("res://scenes/characters/player.tscn").Instantiate<Player>();
 
 
 			GameManager.AddPlayer(player);
