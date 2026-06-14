@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://bocjfhfaqmta6"]
+
+[ext_resource type="Script" uid="uid://diyei2pgpsxty" path="res://scripts/gameplay/levels/SceneTrigger.cs" id="1_etmfl"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3efqg"]
+
+[node name="SceneTrigger" type="Area2D" unique_id=664258388]
+script = ExtResource("1_etmfl")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1342960036]
+position = Vector2(10, 10)
+scale = Vector2(0.9, 0.9)
+shape = SubResource("RectangleShape2D_3efqg")
