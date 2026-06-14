@@ -76,7 +76,6 @@ namespace pokemonGodot.Scripts.Core
 			if (CurrentLevel != null)
 			{
 				GameManager.GetGameViewPort().AddChild(CurrentLevel);
-
 			}
 			else
 			{
