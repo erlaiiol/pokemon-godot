@@ -34,7 +34,7 @@ namespace pokemonGodot.Scripts.Core
 
 			Logger.Info("Loading SceneManager...");
 
-			SceneManager.ChangeLevel();
+			SceneManager.ChangeLevel(LevelName.small_town, spawn: true);
 		}
 
 		public static async void ChangeLevel(LevelName levelName = LevelName.small_town, int trigger = 0, bool spawn = false)

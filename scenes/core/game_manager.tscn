@@ -2,8 +2,9 @@
 
 [ext_resource type="Script" uid="uid://c1v62vs7m8baw" path="res://scripts/core/GameManager.cs" id="1_k3ko1"]
 
-[node name="GameManager" type="Node" unique_id=103372481]
+[node name="GameManager" type="Node" unique_id=103372481 node_paths=PackedStringArray("GameViewPort")]
 script = ExtResource("1_k3ko1")
+GameViewPort = NodePath("Control/SubViewportContainer/SubViewport")
 
 [node name="Control" type="Control" parent="." unique_id=1388925812]
 layout_mode = 3

@@ -22,8 +22,7 @@ namespace pokemonGodot.Scripts.Core
 			
 			Logger.Info("Game Manager Loading...");
 
-			
-			//TODO : Change Scene on start
+			SceneManager.ChangeLevel(spawn : true);
 		}
 
 		public static SubViewport GetGameViewPort()
