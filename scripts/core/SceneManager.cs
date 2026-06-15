@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Godot;
 using Godot.Collections;
+using pokemonGodot.Scripts.Gameplay;
 using pokemonGodot.Scripts.Gameplay.Levels;
 using Logger = pokemonGodot.Scripts.Core.Logger;
 
@@ -19,7 +20,7 @@ namespace pokemonGodot.Scripts.Core
 		[Export] public Level CurrentLevel;
 
 		[Export]
-		public Array<Level> AllLevels;
+		public Array<Level> AllLevels = [];
 		
 		
 		
@@ -33,8 +34,6 @@ namespace pokemonGodot.Scripts.Core
 			IsChanging = false;
 
 			Logger.Info("Loading SceneManager...");
-
-			SceneManager.ChangeLevel(LevelName.small_town, spawn: true);
 		}
 
 		public static async void ChangeLevel(LevelName levelName = LevelName.small_town, int trigger = 0, bool spawn = false)
@@ -98,7 +97,8 @@ namespace pokemonGodot.Scripts.Core
 				throw new Exception($"Missing Scene trigger for trigger {trigger}");
 			}
 
-			GameManager.GetPlayer().Position = sceneTrigger.Position + sceneTrigger.EntryDirection * Globals.Instance.GRID_SIZE;
+			Vector2 destination = sceneTrigger.GlobalPosition + sceneTrigger.EntryDirection * Globals.Instance.GRID_SIZE;
+			GameManager.GetPlayer().GetNode<CharacterMovement>("Movement").Teleport(destination);
 
 
 		}
@@ -117,7 +117,7 @@ namespace pokemonGodot.Scripts.Core
 
 
 			GameManager.AddPlayer(player);
-			GameManager.GetPlayer().Position = spawnPoint.Position;
+			GameManager.GetPlayer().GlobalPosition = spawnPoint.GlobalPosition;
 			
 		}
 

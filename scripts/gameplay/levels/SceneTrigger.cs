@@ -31,17 +31,16 @@ namespace pokemonGodot.Scripts.Gameplay.Levels
 
 		public void OnBodyEntered(Node2D body)
 		{
-			 if (body.Name != "Player")
-			 {
-				 return;
-			 }
+			if (body.Name != "Player") return;
+			if (SceneManager.IsChanging) return;
 
-			 if (Locked)
-			 {
-				 Logger.Info("Uh oh, the level is locked");
-			 }
-			 
-			 SceneManager.ChangeLevel(levelName: TargetLevelName, trigger: TargetLevelTrigger);
+			if (Locked)
+			{
+				Logger.Info("Uh oh, the level is locked");
+				return;
+			}
+
+			SceneManager.ChangeLevel(levelName: TargetLevelName, trigger: TargetLevelTrigger);
 		}
 		public override void _EnterTree()
 		{

@@ -2,8 +2,9 @@
 
 [ext_resource type="Script" uid="uid://c7ug1bqa43844" path="res://scripts/core/SceneManager.cs" id="1_f3ops"]
 
-[node name="SceneManager" type="Node" unique_id=533780270 node_paths=PackedStringArray("AllLevels")]
+[node name="SceneManager" type="Node" unique_id=533780270 node_paths=PackedStringArray("FadeRect", "AllLevels")]
 script = ExtResource("1_f3ops")
+FadeRect = NodePath("Control/ColorRect")
 AllLevels = []
 
 [node name="Control" type="Control" parent="." unique_id=722621649]

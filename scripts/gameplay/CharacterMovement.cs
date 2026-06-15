@@ -92,7 +92,8 @@ namespace pokemonGodot.Scripts.Gameplay
 		
 		public void StartWalking()
 		{
-			
+			if (SceneManager.IsChanging) return;
+
 			TargetPosition = Character.Position + CharacterInput.Direction * Globals.Instance.GRID_SIZE;
 			
 			if (!IsMoving() && !IsTargetOccupied(TargetPosition))
@@ -134,6 +135,17 @@ namespace pokemonGodot.Scripts.Gameplay
 			SnapPositionToGrid();
 			if (!Modules.IsActionPressed())
 				EmitSignal(SignalName.Animation, "idle");
+		}
+
+		public void Teleport(Vector2 worldPosition)
+		{
+			IsWalking = false;
+			Character.GlobalPosition = new Vector2(
+				Mathf.Round(worldPosition.X / Globals.Instance.GRID_SIZE) * Globals.Instance.GRID_SIZE,
+				Mathf.Round(worldPosition.Y / Globals.Instance.GRID_SIZE) * Globals.Instance.GRID_SIZE
+			);
+			TargetPosition = Character.Position;
+			EmitSignal(SignalName.Animation, "idle");
 		}
 
 		public void Turn()
