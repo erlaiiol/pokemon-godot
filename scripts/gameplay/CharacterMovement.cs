@@ -23,13 +23,25 @@ namespace pokemonGodot.Scripts.Gameplay
 		[Export] public Vector2 TargetPosition = Vector2.Down;
 
 		[Export] public bool IsWalking = false;
+
+		[Export] public Vector2 StartPosition;
+
+		[Export] public bool IsJumping = false;
+
+		[Export] public float  JumpHeight = 10f;
+
+		[Export] public float LerpSpeed = 2f;
+
+		[Export] public float Progress = 0f;
+
+		[Export] public ECharacterMovement ECharacterMovement = ECharacterMovement.WALKING;
 		
 		[Export] public bool CollisionDetected = false;
 		
 		// Called when the node enters the scene tree for the first time.
 		public override void _Ready()
 		{
-			CharacterInput.Walk += StartWalking;
+			CharacterInput.Walk += StartMoving;
 			CharacterInput.Turn += Turn;
 			
 			Logger.Info("Loading Character Movement...");
@@ -40,11 +52,17 @@ namespace pokemonGodot.Scripts.Gameplay
 		public override void _Process(double delta)
 		{
 			Walk(delta);
+			Jump(delta);
+
+			if (IsMoving() && !Modules.IsActionJustPressed())
+			{
+				EmitSignal(SignalName.Animation, "idle");
+			}
 		}
 		
 		public bool IsMoving()
 		{
-			return IsWalking;
+			return IsWalking || IsJumping;
 		}
 
 		public bool IsColliding()
@@ -56,7 +74,7 @@ namespace pokemonGodot.Scripts.Gameplay
 		{
 			var spaceState = GetViewport().GetWorld2D().DirectSpaceState;
 
-			Vector2 adjustedTargetPosition = TargetPosition;
+			Vector2 adjustedTargetPosition = targetPosition;
 			adjustedTargetPosition.Y += 8;
 			adjustedTargetPosition.X += 8;
 
@@ -78,7 +96,7 @@ namespace pokemonGodot.Scripts.Gameplay
 
 					return colliderType switch
 					{
-						"TileMapLayer" => true,
+						"TileMapLayer" => GetTileMapLayerCollision((TileMapLayer)collider, adjustedTargetPosition),
 						"SceneTrigger" => false,
 						_ => true
 					};
@@ -88,9 +106,67 @@ namespace pokemonGodot.Scripts.Gameplay
 			
 			return false;
 		}
+
+		public bool GetTileMapLayerCollision(TileMapLayer tileMapLayer, Vector2 adjustedTargetPosition)
+		{
+			Vector2I tileCoordinates = tileMapLayer.LocalToMap(adjustedTargetPosition);
+			TileData tileData = tileMapLayer.GetCellTileData(tileCoordinates);
+
+			if (tileData == null)
+			{
+				return true;
+			}
+
+			var ledgeDirection = (string)tileData.GetCustomData("LEDGE");
+
+			if (ledgeDirection == null)
+			{
+				return true;
+			}
+
+			Logger.Info($"Ledge detected with direction {ledgeDirection}");
+			
+			switch (ledgeDirection)
+			{
+				case "DOWN":
+					if (CharacterInput.Direction == Vector2.Down)
+						{
+							ECharacterMovement = ECharacterMovement.JUMPING;
+							return false;
+						}
+						break;
+				case "LEFT":
+					if (CharacterInput.Direction == Vector2.Left)
+						{
+							ECharacterMovement = ECharacterMovement.JUMPING;
+							return false;
+						}
+						break;
+				case "RIGHT":
+					if (CharacterInput.Direction == Vector2.Right)
+						{
+							ECharacterMovement = ECharacterMovement.JUMPING;
+							return false;
+						}
+						break;
+				case "UP":
+					if (CharacterInput.Direction == Vector2.Up)
+						{
+							ECharacterMovement = ECharacterMovement.JUMPING;
+							return false;
+						}
+						break;
+						 
+					default:
+						return true;
+
+				
+			}
+			return true;
+		}
 		
 		
-		public void StartWalking()
+		public void StartMoving()
 		{
 			if (SceneManager.IsChanging) return;
 
@@ -103,7 +179,19 @@ namespace pokemonGodot.Scripts.Gameplay
 
 				
 				Logger.Info("Moving character to " + TargetPosition + "from " + Character.Position);
-				IsWalking = true;
+				
+				if (ECharacterMovement == ECharacterMovement.JUMPING)
+				{
+					Progress = 0f;
+					IsJumping = true;
+					StartPosition = Character.Position;
+					TargetPosition = Character.Position + CharacterInput.Direction * (Globals.Instance.GRID_SIZE * 2);
+				}
+				else
+				{
+					IsWalking = true;
+				}
+
 			}
 			else
 			{
@@ -120,22 +208,44 @@ namespace pokemonGodot.Scripts.Gameplay
 
 				if (Character.Position.DistanceTo(TargetPosition) <= 1f)
 				{
-					StopWalking();
+					StopMoving();
 				}
-			}
-			else
-			{
-				
 			}
 		}
 
-		public void StopWalking()
+
+		public void Jump(double delta)
+		{
+			if (IsJumping)
+			{
+				Progress += LerpSpeed * (float)delta;
+				Vector2 position = StartPosition.Lerp(TargetPosition, Progress);
+				float parabolicOffset = JumpHeight * (1 - 4 * (Progress - 0.5f) * (Progress - 0.5f));
+				position.Y -= parabolicOffset;
+				Character.Position = position;
+			}
+
+			if (Progress >= 1f)
+			{
+				StopMoving();
+			}	
+		}
+
+		public void StopMoving()
 		{
 			IsWalking = false;
+			IsJumping = false;
+			Progress = 0f;
+
+			ECharacterMovement = ECharacterMovement.WALKING;
+
+
 			SnapPositionToGrid();
 			if (!Modules.IsActionPressed())
 				EmitSignal(SignalName.Animation, "idle");
 		}
+
+
 
 		public void Teleport(Vector2 worldPosition)
 		{

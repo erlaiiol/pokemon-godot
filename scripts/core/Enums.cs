@@ -40,9 +40,16 @@ namespace pokemonGodot.Scripts.Core
         
         turn_right
     }
+
+    public enum ECharacterMovement
+    {
+        WALKING,
+        JUMPING,
+    }
     #endregion
     
     #region levels
+
 
     public enum LevelName
     {
@@ -59,5 +66,7 @@ namespace pokemonGodot.Scripts.Core
         SCENETRIGGERS,
     }
     #endregion
+
+
 
 }
