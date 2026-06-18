@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://d121d5c364vt2"]
+
+[ext_resource type="Texture2D" uid="uid://dkheblegl0nhg" path="res://gfx/font.png" id="1_xiyqi"]
+
+[node name="MessageManager" type="CanvasLayer" unique_id=1919337921]
+
+[node name="Control" type="Control" parent="." unique_id=659250183]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="NinePatchRect" type="NinePatchRect" parent="Control" unique_id=1776582036]
+layout_mode = 0
+offset_left = 242.0
+offset_top = 487.0
+offset_right = 855.0
+offset_bottom = 599.0
+texture = ExtResource("1_xiyqi")
+region_rect = Rect2(-5, 46, 247, 77)
+patch_margin_left = 18
+patch_margin_top = 16
+patch_margin_right = 14
+patch_margin_bottom = 18
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Control/NinePatchRect" unique_id=1637186200]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 19.0
+offset_top = 20.0
+offset_right = -19.0
+offset_bottom = -23.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/default_color = Color(0, 0, 0, 1)
+text = "Placeholder"
