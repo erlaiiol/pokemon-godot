@@ -3,6 +3,7 @@ using System;
 using pokemonGodot.Scripts.Core;
 using pokemonGodot.Scripts.Gameplay;
 using pokemonGodot.Scripts.Utilities;
+using pokemonGodot.Scripts.Gameplay.Levels;
 
 namespace pokemonGodot.Scripts.Gameplay.States
 {
@@ -30,6 +31,7 @@ namespace pokemonGodot.Scripts.Gameplay.States
 		{
 			GetInputDirection();
 			GetInput(delta);
+			GetUseInput();
 		}
 
 		public void GetInputDirection()
@@ -85,6 +87,29 @@ namespace pokemonGodot.Scripts.Gameplay.States
 					PlayerInput.EmitSignal(CharacterInput.SignalName.Walk);
 				}
 			}
+		}
+
+		public void GetUseInput()
+		{
+			if (Input.IsActionJustReleased("use"))
+			{
+				var (_, result) = CharacterMovement.GetTargetColliders(CharacterMovement.TargetPosition);
+
+
+				foreach (var collision in result)
+				{
+					var collider = (Node)(GodotObject)collision["collider"];
+					var colliderType = collider.GetType().Name;
+
+					switch (colliderType)
+					{
+						case "Sign":
+						((Sign)collider).PlayMessage();
+						break;
+					}
+				}
+			}
+
 		}
 	}
 

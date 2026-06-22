@@ -2,6 +2,7 @@ using Godot;
 using System;
 using pokemonGodot.Scripts.Core;
 using Logger = pokemonGodot.Scripts.Core.Logger;
+using Godot.Collections;
 
 namespace pokemonGodot.Scripts.Gameplay
 {
@@ -70,7 +71,7 @@ namespace pokemonGodot.Scripts.Gameplay
 			return CollisionDetected;
 		}
 
-		private bool IsTargetOccupied(Vector2 targetPosition)
+		public (Vector2, Array<Dictionary>) GetTargetColliders(Vector2 targetPosition)
 		{
 			var spaceState = GetViewport().GetWorld2D().DirectSpaceState;
 
@@ -85,8 +86,15 @@ namespace pokemonGodot.Scripts.Gameplay
 				CollideWithAreas = true
 			};
 
-			var result = spaceState.IntersectPoint(query);
+			return (adjustedTargetPosition, spaceState.IntersectPoint(query));
+		}
 
+		private bool IsTargetOccupied(Vector2 targetPosition)
+		{
+
+
+			var (adjustedTargetPosition, result) = GetTargetColliders(targetPosition);
+			
 			if (result.Count > 0)
 			{
 				foreach (var collision in result)
@@ -96,6 +104,7 @@ namespace pokemonGodot.Scripts.Gameplay
 
 					return colliderType switch
 					{
+						"Sign" => true,
 						"TileMapLayer" => GetTileMapLayerCollision((TileMapLayer)collider, adjustedTargetPosition),
 						"SceneTrigger" => false,
 						_ => true

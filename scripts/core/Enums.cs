@@ -65,6 +65,12 @@ namespace pokemonGodot.Scripts.Core
         SPAWNPOINTS,
         SCENETRIGGERS,
     }
+
+    public enum SignType
+    {
+        METAL,
+        WOOD,
+    }
     #endregion
 
 
