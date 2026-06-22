@@ -1,8 +1,10 @@
 [gd_scene format=3 uid="uid://d121d5c364vt2"]
 
+[ext_resource type="Script" uid="uid://3m33jcqgyoch" path="res://scripts/UI/MessageManager.cs" id="1_rsj3g"]
 [ext_resource type="Texture2D" uid="uid://dkheblegl0nhg" path="res://gfx/font.png" id="1_xiyqi"]
 
 [node name="MessageManager" type="CanvasLayer" unique_id=1919337921]
+script = ExtResource("1_rsj3g")
 
 [node name="Control" type="Control" parent="." unique_id=659250183]
 layout_mode = 3

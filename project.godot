@@ -18,6 +18,8 @@ config/icon="res://icon.svg"
 [autoload]
 
 Globals="*uid://b0pmc2kxv12ts"
+SceneManager="*uid://bpx4vjm8btn7r"
+Signals="*uid://c3yeta2l1made"
 
 [dotnet]
 

@@ -3,7 +3,7 @@ using System;
 using pokemonGodot.Scripts.Core;
 using pokemonGodot.Scripts.Utilities;
 
-namespace pokemonGodot.Scripts.Gameplay
+namespace pokemonGodot.Scripts.Gameplay.States
 {
 	public partial class PlayerRoamState : State
 	{
@@ -12,6 +12,17 @@ namespace pokemonGodot.Scripts.Gameplay
 		[Export] public PlayerInput PlayerInput;
 
 		[Export] public CharacterMovement CharacterMovement;
+
+		public override void _Ready()
+		{
+			Signals.Instance.MessageBoxOpen += (value) =>
+			{
+				if (value)
+				{
+					StateMachine.ChangeState("Message");
+				}
+			};
+		}
 		
 		// Called every frame. 'delta' is the elapsed time since the previous frame.
 		public override void _Process(double delta)

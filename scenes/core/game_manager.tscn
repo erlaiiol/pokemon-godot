@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c1v62vs7m8baw" path="res://scripts/core/GameManager.cs" id="1_k3ko1"]
 [ext_resource type="Script" uid="uid://c7ug1bqa43844" path="res://scripts/core/SceneManager.cs" id="2_scmgr"]
+[ext_resource type="PackedScene" uid="uid://d121d5c364vt2" path="res://scenes/UI/message_manager.tscn" id="3_lv3y2"]
 
 [node name="GameManager" type="Node" unique_id=103372481 node_paths=PackedStringArray("GameViewPort")]
 script = ExtResource("1_k3ko1")
@@ -36,12 +37,14 @@ size_2d_override = Vector2i(1152, 648)
 size_2d_override_stretch = true
 render_target_update_mode = 4
 
-[node name="FadeRect" type="ColorRect" parent="Control" unique_id=3077381222]
+[node name="MessageManager" parent="Control/SubViewportContainer/SubViewport" unique_id=1919337921 instance=ExtResource("3_lv3y2")]
+
+[node name="FadeRect" type="ColorRect" parent="Control" unique_id=-1217586074]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0)
 mouse_filter = 2
+color = Color(0, 0, 0, 0)
