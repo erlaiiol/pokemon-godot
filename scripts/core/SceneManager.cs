@@ -45,20 +45,25 @@ namespace pokemonGodot.Scripts.Core
 
 			IsChanging = true;
 
-			await Instance.GetLevel(levelName);
-
-			if (spawn)
+			try
 			{
-				Instance.Spawn();	
-			}
-			else
-			{
-				Instance.Switch(trigger);
-				
-			}
-			await Instance.FadeIn();
+				await Instance.GetLevel(levelName);
 
-			IsChanging = false;
+				if (spawn)
+					Instance.Spawn();
+				else
+					Instance.Switch(trigger);
+
+				await Instance.FadeIn();
+			}
+			catch (Exception e)
+			{
+				Logger.Error($"ChangeLevel failed: {e.Message}");
+			}
+			finally
+			{
+				IsChanging = false;
+			}
 		}
 
 		public async Task GetLevel(LevelName levelName)

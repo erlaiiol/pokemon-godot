@@ -35,22 +35,22 @@ namespace pokemonGodot.Scripts.Core
 			GD.PrintRich([$"[color={color}]{logMessage}[/color]", ..message]);
 		}
 		
-		public static void Debug(string level, params object[] message)
+		public static void Debug(params object[] message)
 		{
 			Log(LogLevel.DEBUG, message);
 		}
 
-		public static void Info(string level, params object[] message)
+		public static void Info(params object[] message)
 		{
 			Log(LogLevel.INFO, message);
 		}
 
-		public static void Warning(string level, params object[] message)
+		public static void Warning(params object[] message)
 		{
 			Log(LogLevel.WARNING, message);
 		}
 
-		public static void Error(string level, params object[] message)
+		public static void Error(params object[] message)
 		{
 			Log(LogLevel.ERROR, message);
 		}

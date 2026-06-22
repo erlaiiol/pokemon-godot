@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using pokemonGodot.Scripts.Core;
+using pokemonGodot.Scripts.Gameplay;
 using pokemonGodot.Scripts.Utilities;
 
 namespace pokemonGodot.Scripts.Gameplay.States

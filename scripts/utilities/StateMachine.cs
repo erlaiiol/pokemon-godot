@@ -18,6 +18,7 @@ namespace pokemonGodot.Scripts.Utilities
 				if (child is State state)
 				{
 					state.StateOwner = Customer;
+					state.StateMachine = this;
 					state.SetProcess(false);
 				}
 			}

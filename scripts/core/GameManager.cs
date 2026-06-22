@@ -1,4 +1,5 @@
 using Godot;
+using pokemonGodot.Scripts.UI;
 using System;
 
 namespace pokemonGodot.Scripts.Core
@@ -23,6 +24,8 @@ namespace pokemonGodot.Scripts.Core
 			Logger.Info("Game Manager Loading...");
 
 			SceneManager.ChangeLevel(spawn : true);
+
+			MessageManager.PlayText("Welcome to the world of Pokemon !", "Gotta catch em all!");
 		}
 
 		public static SubViewport GetGameViewPort()

@@ -3,8 +3,10 @@
 [ext_resource type="Script" uid="uid://3m33jcqgyoch" path="res://scripts/UI/MessageManager.cs" id="1_rsj3g"]
 [ext_resource type="Texture2D" uid="uid://dkheblegl0nhg" path="res://gfx/font.png" id="1_xiyqi"]
 
-[node name="MessageManager" type="CanvasLayer" unique_id=1919337921]
+[node name="MessageManager" type="CanvasLayer" unique_id=1919337921 node_paths=PackedStringArray("Box", "Label")]
 script = ExtResource("1_rsj3g")
+Box = NodePath("Control/NinePatchRect")
+Label = NodePath("Control/NinePatchRect/RichTextLabel")
 
 [node name="Control" type="Control" parent="." unique_id=659250183]
 layout_mode = 3
@@ -15,6 +17,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="NinePatchRect" type="NinePatchRect" parent="Control" unique_id=1776582036]
+visible = false
 layout_mode = 0
 offset_left = 242.0
 offset_top = 487.0

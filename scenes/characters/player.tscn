@@ -7,7 +7,8 @@
 [ext_resource type="Script" uid="uid://bt676g08psdsb" path="res://scripts/gameplay/CharacterAnimation.cs" id="4_dyp2m"]
 [ext_resource type="Script" uid="uid://qxejp7qat74p" path="res://scripts/utilities/StateMachine.cs" id="5_atpat"]
 [ext_resource type="Script" uid="uid://45cgj8egso26" path="res://scripts/gameplay/CharacterCollisionRayCast.cs" id="6_eojnx"]
-[ext_resource type="Script" uid="uid://dmot0cv5ehs64" path="res://scripts/gameplay/PlayerRoamState.cs" id="6_kqtwu"]
+[ext_resource type="Script" uid="uid://dmot0cv5ehs64" path="res://scripts/gameplay/states/PlayerRoamState.cs" id="6_kqtwu"]
+[ext_resource type="Script" uid="uid://bcc5ovoerdod2" path="res://scripts/gameplay/states/PlayerMessageState.cs" id="9_qgnko"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0qees"]
 size = Vector2(16, 16)
@@ -311,12 +312,19 @@ collide_with_areas = true
 script = ExtResource("6_eojnx")
 CharacterInput = NodePath("../Input")
 
-[node name="StateMachine" type="Node" parent="." unique_id=2088287933 node_paths=PackedStringArray("Customer")]
+[node name="StateMachine" type="Node" parent="." unique_id=2088287933 node_paths=PackedStringArray("Customer", "CurrentState")]
 script = ExtResource("5_atpat")
 Customer = NodePath("..")
+CurrentState = NodePath("Roam")
 
-[node name="Roam" type="Node" parent="StateMachine" unique_id=714055499 node_paths=PackedStringArray("PlayerInput", "CharacterMovement", "StateOwner")]
+[node name="Roam" type="Node" parent="StateMachine" unique_id=714055499 node_paths=PackedStringArray("PlayerInput", "CharacterMovement", "StateOwner", "StateMachine")]
 script = ExtResource("6_kqtwu")
 PlayerInput = NodePath("../../Input")
 CharacterMovement = NodePath("../../Movement")
 StateOwner = NodePath("../..")
+StateMachine = NodePath("..")
+
+[node name="Message" type="Node" parent="StateMachine" unique_id=1174546310 node_paths=PackedStringArray("StateOwner", "StateMachine")]
+script = ExtResource("9_qgnko")
+StateOwner = NodePath("../..")
+StateMachine = NodePath("..")
