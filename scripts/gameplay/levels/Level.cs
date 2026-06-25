@@ -1,6 +1,6 @@
 using Godot;
 using System;
-using pokemonGodot.Scripts.Core;
+using pokemonGodot.Scripts.Core.Enums;
 using Logger = pokemonGodot.Scripts.Core.Logger;
 
 
@@ -13,6 +13,7 @@ namespace pokemonGodot.Scripts.Gameplay.Levels
 
 		[ExportCategory("Level Basics")] 
 		[Export] public LevelName LevelName;
+		[Export(PropertyHint.Range, "0,100")] public int EncounterRate;
 
 		[ExportCategory("Camera Limits")] 
 		[Export] public int Top;
@@ -22,6 +23,7 @@ namespace pokemonGodot.Scripts.Gameplay.Levels
 		[Export] public int Left;
 		
 		[Export] public int Right;
+
 		
 		
 		// Called when the node enters the scene tree for the first time.

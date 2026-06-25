@@ -1,0 +1,32 @@
+namespace pokemonGodot.Scripts.Core.Enums
+{
+    public enum Levels
+    {
+        
+    }
+    #region levels
+
+
+    public enum LevelName
+    {
+        small_town,
+        small_town_greens_house,
+        small_town_purples_house,
+        small_town_pokemon_center,
+        small_town_cave
+    }
+
+    public enum LevelGroups
+    {
+        SPAWNPOINTS,
+        SCENETRIGGERS,
+    }
+
+    public enum SignType
+    {
+        METAL,
+        WOOD,
+    }
+    #endregion
+
+}

@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using pokemonGodot.Scripts.Core.Enums;
 
 namespace pokemonGodot.Scripts.Core
 {

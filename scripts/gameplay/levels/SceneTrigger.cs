@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using pokemonGodot.Scripts.Core;
+using pokemonGodot.Scripts.Core.Enums;
 using Logger = pokemonGodot.Scripts.Core.Logger;
 
 namespace pokemonGodot.Scripts.Gameplay.Levels

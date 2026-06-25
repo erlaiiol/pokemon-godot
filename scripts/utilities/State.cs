@@ -10,12 +10,12 @@ namespace pokemonGodot.Scripts.Utilities
 
         public virtual void EnterState()
         {
-            Logger.Info($"Entering {GetType().Name} state ...");
+            Logger.Info($" {StateOwner.Name} Entering {GetType().Name} state ...");
         }
 
         public virtual void ExitState()
         {
-            Logger.Info($"Exiting {GetType().Name} state ...");
+            Logger.Info($" {StateOwner.Name} Exiting {GetType().Name} state ...");
         }
     }
 }

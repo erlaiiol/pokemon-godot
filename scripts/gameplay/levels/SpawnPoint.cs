@@ -1,6 +1,6 @@
 using Godot;
 using System;
-using pokemonGodot.Scripts.Core;
+using pokemonGodot.Scripts.Core.Enums;
 
 
 namespace pokemonGodot.Scripts.Gameplay.Levels

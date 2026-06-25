@@ -5,6 +5,15 @@
 [ext_resource type="PackedScene" uid="uid://bocjfhfaqmta6" path="res://scenes/levels/scene_trigger.tscn" id="3_6kjy8"]
 [ext_resource type="PackedScene" uid="uid://cbla1cwui1tec" path="res://scenes/levels/spawn_point.tscn" id="4_3nfn8"]
 [ext_resource type="PackedScene" uid="uid://bwsijlllncaut" path="res://scenes/levels/sign.tscn" id="5_6kjy8"]
+[ext_resource type="PackedScene" uid="uid://286u1wbvr5ae" path="res://scenes/levels/tall_grass.tscn" id="6_3nfn8"]
+[ext_resource type="PackedScene" uid="uid://bdshq5evbuj2b" path="res://scenes/characters/npc.tscn" id="7_fv6i1"]
+[ext_resource type="Script" uid="uid://bxcmmlhpsa8ha" path="res://scripts/gameplay/NpcInputConfig.cs" id="8_00pfa"]
+
+[sub_resource type="Resource" id="Resource_gr214"]
+script = ExtResource("8_00pfa")
+Messages = ["How is it going ?"]
+PatrolPoints = []
+metadata/_custom_type_script = "uid://bxcmmlhpsa8ha"
 
 [node name="Level" type="Node2D" unique_id=153791315]
 script = ExtResource("1_n78qg")
@@ -45,29 +54,61 @@ tile_set = ExtResource("1_aek01")
 [node name="SceneTriggers" type="Node2D" parent="." unique_id=430017625]
 
 [node name="SceneTrigger" parent="SceneTriggers" unique_id=664258388 instance=ExtResource("3_6kjy8")]
-position = Vector2(158, 107)
+position = Vector2(168, 120)
 TargetLevelName = 1
 
 [node name="SceneTrigger2" parent="SceneTriggers" unique_id=1860220780 instance=ExtResource("3_6kjy8")]
-position = Vector2(238, 107)
+position = Vector2(248, 120)
 TargetLevelName = 2
 
 [node name="SceneTrigger3" parent="SceneTriggers" unique_id=938624720 instance=ExtResource("3_6kjy8")]
-position = Vector2(54, 172)
+position = Vector2(64, 184)
 TargetLevelName = 3
 
 [node name="SceneTrigger4" parent="SceneTriggers" unique_id=1903733828 instance=ExtResource("3_6kjy8")]
-position = Vector2(350, 88)
+position = Vector2(360, 104)
 TargetLevelName = 4
 
 [node name="SpawnPoints" type="Node2D" parent="." unique_id=400345371]
 position = Vector2(0, -1)
 
 [node name="SpawnPoint" parent="SpawnPoints" unique_id=337137045 instance=ExtResource("4_3nfn8")]
-position = Vector2(51, 5)
+position = Vector2(144, 185)
 
 [node name="Signs" type="Node2D" parent="." unique_id=664742568]
 
 [node name="GreensHouse" parent="Signs" unique_id=1619195573 instance=ExtResource("5_6kjy8")]
-position = Vector2(145, 133)
+position = Vector2(144, 128)
 Messages = Array[String](["Greens house"])
+
+[node name="PurplesHouse" parent="Signs" unique_id=1693228433 instance=ExtResource("5_6kjy8")]
+position = Vector2(224, 128)
+Messages = Array[String](["Purple's house"])
+SignStyle = 1
+
+[node name="PokemonCenter" parent="Signs" unique_id=120859858 instance=ExtResource("5_6kjy8")]
+position = Vector2(32, 192)
+Messages = Array[String](["Pokemon center(void)"])
+SignStyle = 1
+
+[node name="Cave" parent="Signs" unique_id=1072664372 instance=ExtResource("5_6kjy8")]
+position = Vector2(336, 112)
+Messages = Array[String](["Cave(void)"])
+SignStyle = 1
+
+[node name="TallGrass" type="Node2D" parent="." unique_id=1447793314]
+
+[node name="TallGrass" parent="TallGrass" unique_id=1207919069 instance=ExtResource("6_3nfn8")]
+position = Vector2(216, 208)
+
+[node name="TallGrass2" parent="TallGrass" unique_id=1545488784 instance=ExtResource("6_3nfn8")]
+position = Vector2(232, 208)
+
+[node name="TallGrass3" parent="TallGrass" unique_id=1333902775 instance=ExtResource("6_3nfn8")]
+position = Vector2(248, 208)
+
+[node name="NPCs" type="Node2D" parent="." unique_id=940221145]
+
+[node name="NPC" parent="NPCs" unique_id=296034298 instance=ExtResource("7_fv6i1")]
+position = Vector2(256, 168)
+NpcInputConfig = SubResource("Resource_gr214")

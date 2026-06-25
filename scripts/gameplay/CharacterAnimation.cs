@@ -1,104 +1,67 @@
 using Godot;
-using System;
-using System.Reflection.Metadata.Ecma335;
-using pokemonGodot.Scripts.Core;
+using pokemonGodot.Scripts.Core.Enums;
 using Logger = pokemonGodot.Scripts.Core.Logger;
 
 namespace pokemonGodot.Scripts.Gameplay
 {
 	public partial class CharacterAnimation : AnimatedSprite2D
 	{
+		[ExportCategory("Nodes")]
 
-		[ExportCategory("Nodes")] 
-		
 		[Export] CharacterInput CharacterInput;
-		
+
 		[Export] CharacterMovement CharacterMovement;
 		[Export] ECharacterAnimation ECharacterAnimation = ECharacterAnimation.idle_down;
-		// Called when the node enters the scene tree for the first time.
+
 		public override void _Ready()
 		{
 			CharacterMovement.Animation += PlayAnimation;
+			// AnimationFinished = animation non-loopée terminée (jamais déclenché pour loop=true)
+			// AnimationLooped   = animation loopée qui termine un cycle → c'est celui-ci qu'on veut
+			AnimationLooped += OnTurnCycleCompleted;
 			Logger.Info("Loading player animation component...");
 		}
 
+		private void OnTurnCycleCompleted()
+		{
+			if (ECharacterAnimation is ECharacterAnimation.turn_up
+				or ECharacterAnimation.turn_down
+				or ECharacterAnimation.turn_left
+				or ECharacterAnimation.turn_right)
+			{
+				PlayAnimation("idle");
+			}
+		}
 
 		public void PlayAnimation(string animationType)
 		{
 			ECharacterAnimation previousAnimation = ECharacterAnimation;
-			
+
 			if (CharacterMovement.IsMoving()) return;
 
-			switch (animationType)
+			ECharacterAnimation = (animationType, CharacterInput.Direction) switch
 			{
-				case "walk": 
-					if (CharacterInput.Direction == Vector2.Up)
-					{
-						ECharacterAnimation = ECharacterAnimation.walk_up;
-					}
-					else if (CharacterInput.Direction == Vector2.Left)
-					{
-						ECharacterAnimation = ECharacterAnimation.walk_left;
-					}
-					else if (CharacterInput.Direction == Vector2.Right)
-					{
-						ECharacterAnimation = ECharacterAnimation.walk_right;
-					}
-					else if (CharacterInput.Direction == Vector2.Down)
-					{
-						ECharacterAnimation = ECharacterAnimation.walk_down;
-					}
-					break;
-				case "turn":
-					if (CharacterInput.Direction == Vector2.Up)
-					{
-						ECharacterAnimation = ECharacterAnimation.turn_up;
-					}
-					else if (CharacterInput.Direction == Vector2.Left)
-					{
-						ECharacterAnimation = ECharacterAnimation.turn_left;
-					}
-					else if (CharacterInput.Direction == Vector2.Right)
-					{
-						ECharacterAnimation = ECharacterAnimation.turn_right;
-					}
-					else if (CharacterInput.Direction == Vector2.Down)
-					{
-						ECharacterAnimation = ECharacterAnimation.turn_down;
-					}
-
-					break;
-				case "idle":
-					if (CharacterInput.Direction == Vector2.Up)
-					{
-						ECharacterAnimation = ECharacterAnimation.idle_up;
-					}
-					else if (CharacterInput.Direction == Vector2.Left)
-					{
-						ECharacterAnimation = ECharacterAnimation.idle_left;
-					}
-					else if (CharacterInput.Direction == Vector2.Right)
-					{
-						ECharacterAnimation = ECharacterAnimation.idle_right;
-					}
-					else if (CharacterInput.Direction == Vector2.Down)
-					{
-						ECharacterAnimation = ECharacterAnimation.idle_down;
-					}
-
-					break;
-			}
+				("walk",  Direction.Up)    => ECharacterAnimation.walk_up,
+				("walk",  Direction.Down)  => ECharacterAnimation.walk_down,
+				("walk",  Direction.Left)  => ECharacterAnimation.walk_left,
+				("walk",  Direction.Right) => ECharacterAnimation.walk_right,
+				("turn",  Direction.Up)    => ECharacterAnimation.turn_up,
+				("turn",  Direction.Down)  => ECharacterAnimation.turn_down,
+				("turn",  Direction.Left)  => ECharacterAnimation.turn_left,
+				("turn",  Direction.Right) => ECharacterAnimation.turn_right,
+				("idle",  Direction.Up)    => ECharacterAnimation.idle_up,
+				("idle",  Direction.Down)  => ECharacterAnimation.idle_down,
+				("idle",  Direction.Left)  => ECharacterAnimation.idle_left,
+				("idle",  Direction.Right) => ECharacterAnimation.idle_right,
+				_ => ECharacterAnimation
+			};
 
 			if (previousAnimation == ECharacterAnimation) return;
-			
-				Logger.Info($"Animation {previousAnimation} was changed to {ECharacterAnimation}");
-				Play(ECharacterAnimation.ToString());
 
+			Logger.Info($"Animation {previousAnimation} was changed to {ECharacterAnimation}");
+			Play(ECharacterAnimation.ToString());
+		}
 
-		}
-		// Called every frame. 'delta' is the elapsed time since the previous frame.
-		public override void _Process(double delta)
-		{
-		}
+		public override void _Process(double delta) { }
 	}
 }

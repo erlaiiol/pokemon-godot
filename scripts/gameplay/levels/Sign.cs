@@ -1,6 +1,6 @@
 using Godot;
 using Godot.Collections;
-using pokemonGodot.Scripts.Core;
+using pokemonGodot.Scripts.Core.Enums;
 using pokemonGodot.Scripts.UI;
 using System;
 using Logger = pokemonGodot.Scripts.Core.Logger;

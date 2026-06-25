@@ -42,7 +42,7 @@ tile_set = ExtResource("2_7at4i")
 [node name="SceneTriggers" type="Node2D" parent="." unique_id=430017625]
 
 [node name="SceneTrigger" parent="SceneTriggers" unique_id=664258388 instance=ExtResource("3_wggpw")]
-position = Vector2(54, -3)
+position = Vector2(64, 8)
 
 [node name="SpawnPoints" type="Node2D" parent="." unique_id=400345371]
 position = Vector2(0, -1)

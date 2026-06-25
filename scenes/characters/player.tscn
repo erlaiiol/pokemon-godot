@@ -279,7 +279,6 @@ script = ExtResource("1_6eyoc")
 StateMachine = NodePath("StateMachine")
 
 [node name="Collider" type="CollisionShape2D" parent="." unique_id=1590522467]
-position = Vector2(8, 8)
 shape = SubResource("RectangleShape2D_0qees")
 
 [node name="Input" type="Node" parent="." unique_id=1134923840]
@@ -292,8 +291,8 @@ CharacterInput = NodePath("../Input")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1676694477 node_paths=PackedStringArray("CharacterInput", "CharacterMovement")]
 texture_filter = 1
-position = Vector2(8, 8.5)
-scale = Vector2(0.5, 0.53125)
+position = Vector2(0, -3)
+scale = Vector2(0.68750006, 0.71875)
 sprite_frames = SubResource("SpriteFrames_6gvyl")
 animation = &"idle_down"
 script = ExtResource("4_dyp2m")
@@ -301,12 +300,10 @@ CharacterInput = NodePath("../Input")
 CharacterMovement = NodePath("../Movement")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1498746314]
-position = Vector2(8, 8)
 zoom = Vector2(3, 3)
 position_smoothing_enabled = true
 
 [node name="CollisionRayCast" type="RayCast2D" parent="." unique_id=1544449416 node_paths=PackedStringArray("CharacterInput")]
-position = Vector2(8, 8)
 target_position = Vector2(0, 16)
 collide_with_areas = true
 script = ExtResource("6_eojnx")

@@ -1,5 +1,6 @@
 using System;
 using Godot;
+using pokemonGodot.Scripts.Core.Enums;
 
 namespace pokemonGodot.Scripts.Gameplay {
 
@@ -10,11 +11,9 @@ namespace pokemonGodot.Scripts.Gameplay {
 
         [Signal]
         public delegate void TurnEventHandler();
-        
+
         [ExportCategory("Common Input")]
-        
-        [Export] public Vector2 Direction = Vector2.Zero;
-        
-        [Export] public Vector2 TargetPosition = Vector2.Zero;
+
+        [Export] public Direction Direction = Direction.None;
     }
 }

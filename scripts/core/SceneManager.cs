@@ -5,7 +5,7 @@ using Godot;
 using Godot.Collections;
 using pokemonGodot.Scripts.Gameplay;
 using pokemonGodot.Scripts.Gameplay.Levels;
-using Logger = pokemonGodot.Scripts.Core.Logger;
+using pokemonGodot.Scripts.Core.Enums;
 
 namespace pokemonGodot.Scripts.Core
 {
@@ -103,7 +103,7 @@ namespace pokemonGodot.Scripts.Core
 			}
 
 			Vector2 destination = sceneTrigger.GlobalPosition + sceneTrigger.EntryDirection * Globals.Instance.GRID_SIZE;
-			GameManager.GetPlayer().GetNode<CharacterMovement>("Movement").Teleport(destination);
+			GameManager.GetPlayer().GetNode<CharacterMovement>("Movement").PlaceAt(destination);
 
 
 		}
@@ -122,7 +122,7 @@ namespace pokemonGodot.Scripts.Core
 
 
 			GameManager.AddPlayer(player);
-			GameManager.GetPlayer().GlobalPosition = spawnPoint.GlobalPosition;
+			GameManager.GetPlayer().GlobalPosition = Globals.SnapToGrid(spawnPoint.GlobalPosition);
 			
 		}
 
@@ -138,6 +138,11 @@ namespace pokemonGodot.Scripts.Core
 			Tween tween = CreateTween();
 			tween.TweenProperty(FadeRect, "color:a", 0.0, 0.25);
 			await ToSignal(tween, "finished");
+		}
+
+		public static Level GetCurrentLevel()
+		{
+			return Instance.CurrentLevel;
 		}
 
 	}

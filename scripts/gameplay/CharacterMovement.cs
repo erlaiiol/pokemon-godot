@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using pokemonGodot.Scripts.Core;
+using pokemonGodot.Scripts.Core.Enums;
 using Logger = pokemonGodot.Scripts.Core.Logger;
 using Godot.Collections;
 
@@ -75,18 +76,14 @@ namespace pokemonGodot.Scripts.Gameplay
 		{
 			var spaceState = GetViewport().GetWorld2D().DirectSpaceState;
 
-			Vector2 adjustedTargetPosition = targetPosition;
-			adjustedTargetPosition.Y += 8;
-			adjustedTargetPosition.X += 8;
-
 			var query = new PhysicsPointQueryParameters2D
 			{
-				Position = adjustedTargetPosition,
+				Position = targetPosition,
 				CollisionMask = 1,
 				CollideWithAreas = true
 			};
 
-			return (adjustedTargetPosition, spaceState.IntersectPoint(query));
+			return (targetPosition, spaceState.IntersectPoint(query));
 		}
 
 		private bool IsTargetOccupied(Vector2 targetPosition)
@@ -138,28 +135,28 @@ namespace pokemonGodot.Scripts.Gameplay
 			switch (ledgeDirection)
 			{
 				case "DOWN":
-					if (CharacterInput.Direction == Vector2.Down)
+					if (CharacterInput.Direction == Direction.Down)
 						{
 							ECharacterMovement = ECharacterMovement.JUMPING;
 							return false;
 						}
 						break;
 				case "LEFT":
-					if (CharacterInput.Direction == Vector2.Left)
+					if (CharacterInput.Direction == Direction.Left)
 						{
 							ECharacterMovement = ECharacterMovement.JUMPING;
 							return false;
 						}
 						break;
 				case "RIGHT":
-					if (CharacterInput.Direction == Vector2.Right)
+					if (CharacterInput.Direction == Direction.Right)
 						{
 							ECharacterMovement = ECharacterMovement.JUMPING;
 							return false;
 						}
 						break;
 				case "UP":
-					if (CharacterInput.Direction == Vector2.Up)
+					if (CharacterInput.Direction == Direction.Up)
 						{
 							ECharacterMovement = ECharacterMovement.JUMPING;
 							return false;
@@ -179,7 +176,7 @@ namespace pokemonGodot.Scripts.Gameplay
 		{
 			if (SceneManager.IsChanging) return;
 
-			TargetPosition = Character.Position + CharacterInput.Direction * Globals.Instance.GRID_SIZE;
+			TargetPosition = Character.Position + CharacterInput.Direction.ToVector2() * Globals.Instance.GRID_SIZE;
 			
 			if (!IsMoving() && !IsTargetOccupied(TargetPosition))
 			{
@@ -194,7 +191,7 @@ namespace pokemonGodot.Scripts.Gameplay
 					Progress = 0f;
 					IsJumping = true;
 					StartPosition = Character.Position;
-					TargetPosition = Character.Position + CharacterInput.Direction * (Globals.Instance.GRID_SIZE * 2);
+					TargetPosition = Character.Position + CharacterInput.Direction.ToVector2() * (Globals.Instance.GRID_SIZE * 2);
 				}
 				else
 				{
@@ -256,13 +253,10 @@ namespace pokemonGodot.Scripts.Gameplay
 
 
 
-		public void Teleport(Vector2 worldPosition)
+		public void PlaceAt(Vector2 worldPosition)
 		{
 			IsWalking = false;
-			Character.GlobalPosition = new Vector2(
-				Mathf.Round(worldPosition.X / Globals.Instance.GRID_SIZE) * Globals.Instance.GRID_SIZE,
-				Mathf.Round(worldPosition.Y / Globals.Instance.GRID_SIZE) * Globals.Instance.GRID_SIZE
-			);
+			Character.GlobalPosition = Globals.SnapToGrid(worldPosition);
 			TargetPosition = Character.Position;
 			EmitSignal(SignalName.Animation, "idle");
 		}
@@ -274,10 +268,7 @@ namespace pokemonGodot.Scripts.Gameplay
 
 		public void SnapPositionToGrid()
 		{
-			Character.Position = new Vector2(
-				Mathf.Round(Character.Position.X / Globals.Instance.GRID_SIZE) * Globals.Instance.GRID_SIZE,
-				Mathf.Round(Character.Position.Y / Globals.Instance.GRID_SIZE) * Globals.Instance.GRID_SIZE
-				);
+			Character.Position = Globals.SnapToGrid(Character.Position);
 		}
 		
 		

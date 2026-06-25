@@ -1,7 +1,6 @@
 using Godot;
-using System;
 using pokemonGodot.Scripts.Core;
-using pokemonGodot.Scripts.Gameplay;
+using pokemonGodot.Scripts.Core.Enums;
 using pokemonGodot.Scripts.Utilities;
 using pokemonGodot.Scripts.Gameplay.Levels;
 
@@ -9,8 +8,8 @@ namespace pokemonGodot.Scripts.Gameplay.States
 {
 	public partial class PlayerRoamState : State
 	{
-		[ExportCategory("State Vars")] 
-		
+		[ExportCategory("State Vars")]
+
 		[Export] public PlayerInput PlayerInput;
 
 		[Export] public CharacterMovement CharacterMovement;
@@ -25,8 +24,7 @@ namespace pokemonGodot.Scripts.Gameplay.States
 				}
 			};
 		}
-		
-		// Called every frame. 'delta' is the elapsed time since the previous frame.
+
 		public override void _Process(double delta)
 		{
 			GetInputDirection();
@@ -37,44 +35,26 @@ namespace pokemonGodot.Scripts.Gameplay.States
 		public void GetInputDirection()
 		{
 			if (Input.IsActionJustPressed("ui_up"))
-			{
-				PlayerInput.Direction = Vector2.Up;
-				PlayerInput.TargetPosition = new Vector2(0, -Globals.Instance.GRID_SIZE);
-			}
+				PlayerInput.Direction = Direction.Up;
 			else if (Input.IsActionJustPressed("ui_down"))
-			{
-				PlayerInput.Direction = Vector2.Down;
-				PlayerInput.TargetPosition = new Vector2(0, Globals.Instance.GRID_SIZE);
-			}
+				PlayerInput.Direction = Direction.Down;
 			else if (Input.IsActionJustPressed("ui_left"))
-			{
-				PlayerInput.Direction = Vector2.Left;
-				PlayerInput.TargetPosition = new Vector2(-Globals.Instance.GRID_SIZE, 0);
-			}
+				PlayerInput.Direction = Direction.Left;
 			else if (Input.IsActionJustPressed("ui_right"))
-			{
-				PlayerInput.Direction = Vector2.Right;
-				PlayerInput.TargetPosition = new Vector2(-Globals.Instance.GRID_SIZE, 0);
-			}
-
+				PlayerInput.Direction = Direction.Right;
 		}
 
 		public void GetInput(double delta)
 		{
-
 			if (CharacterMovement.IsMoving()) return;
-				
+
 			if (Modules.IsActionJustReleased())
 			{
 				if (PlayerInput.HoldTime > PlayerInput.HoldThreshold)
-				{
 					PlayerInput.EmitSignal(CharacterInput.SignalName.Walk);
-				}
 				else
-				{
 					PlayerInput.EmitSignal(CharacterInput.SignalName.Turn);
-				}
-				
+
 				PlayerInput.HoldTime = 0.0f;
 			}
 
@@ -83,9 +63,7 @@ namespace pokemonGodot.Scripts.Gameplay.States
 				PlayerInput.HoldTime += delta;
 
 				if (PlayerInput.HoldTime > PlayerInput.HoldThreshold)
-				{
 					PlayerInput.EmitSignal(CharacterInput.SignalName.Walk);
-				}
 			}
 		}
 
@@ -93,24 +71,25 @@ namespace pokemonGodot.Scripts.Gameplay.States
 		{
 			if (Input.IsActionJustReleased("use"))
 			{
-				var (_, result) = CharacterMovement.GetTargetColliders(CharacterMovement.TargetPosition);
-
+				Vector2 lookTarget = CharacterMovement.Character.GlobalPosition
+					+ PlayerInput.Direction.ToVector2() * Globals.Instance.GRID_SIZE;
+				var (_, result) = CharacterMovement.GetTargetColliders(lookTarget);
 
 				foreach (var collision in result)
 				{
 					var collider = (Node)(GodotObject)collision["collider"];
-					var colliderType = collider.GetType().Name;
 
-					switch (colliderType)
+					switch (collider.GetType().Name)
 					{
 						case "Sign":
-						((Sign)collider).PlayMessage();
-						break;
+							((Sign)collider).PlayMessage();
+							break;
+						case "Npc":
+							((Npc)collider).PlayMessage(PlayerInput.Direction);
+							break;
 					}
 				}
 			}
-
 		}
 	}
-
 }
