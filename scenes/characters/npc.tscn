@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://dgbm003es1yk4" path="res://scripts/gameplay/states/NpcRoamState.cs" id="6_cr2nu"]
 [ext_resource type="Script" uid="uid://c5f31l4bwgdsy" path="res://scripts/gameplay/states/NpcMessageState.cs" id="9_cr2nu"]
 [ext_resource type="Script" uid="uid://45cgj8egso26" path="res://scripts/gameplay/CharacterCollisionRayCast.cs" id="10_cr2nu"]
+[ext_resource type="Script" uid="uid://ckkyl8uvd2lv4" path="res://scripts/gameplay/YSortable.cs" id="11_cr2nu"]
 
 [sub_resource type="Resource" id="Resource_8t0fs"]
 script = ExtResource("2_thqvo")
@@ -24,6 +25,9 @@ size = Vector2(16, 16)
 texture_filter = 1
 script = ExtResource("1_ceaqc")
 NpcInputConfig = SubResource("Resource_8t0fs")
+
+[node name="YSortable" type="Node" parent="." unique_id=1384539483]
+script = ExtResource("11_cr2nu")
 
 [node name="Collider" type="CollisionShape2D" parent="." unique_id=1729477293]
 shape = SubResource("RectangleShape2D_7qyh0")
@@ -56,8 +60,10 @@ script = ExtResource("5_brs55")
 Customer = NodePath("..")
 CurrentState = NodePath("Roam")
 
-[node name="Roam" type="Node" parent="StateMachine" unique_id=126897369 node_paths=PackedStringArray("StateOwner", "StateMachine")]
+[node name="Roam" type="Node" parent="StateMachine" unique_id=126897369 node_paths=PackedStringArray("NpcInput", "CharacterMovement", "StateOwner", "StateMachine")]
 script = ExtResource("6_cr2nu")
+NpcInput = NodePath("../../Input")
+CharacterMovement = NodePath("../../Movement")
 StateOwner = NodePath("../..")
 StateMachine = NodePath("..")
 

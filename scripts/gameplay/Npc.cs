@@ -66,16 +66,7 @@ namespace pokemonGodot.Scripts.Gameplay
 
 		public override void _Process(double delta)
 		{
-			if (Engine.IsEditorHint())
-			{
-				return;
-			}
-			var player = GameManager.GetPlayer();
-			if (player != null)
-			{
-				ZIndex = (player.Position.Y <= Position.Y) ? 6 : 4;
-
-			}
+			if (Engine.IsEditorHint()) return;
 		}
 		private void UpdateAppearance()
 		{

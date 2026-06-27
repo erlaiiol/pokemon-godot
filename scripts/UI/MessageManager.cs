@@ -61,6 +61,7 @@ namespace pokemonGodot.Scripts.UI
 			}
 
 			Instance.Messages.RemoveAt(0);
+			Signals.EmitGlobalSignal(Signals.SignalName.MessageBoxOpen, false);
 			Instance.IsScrolling = false;    
 		}
 

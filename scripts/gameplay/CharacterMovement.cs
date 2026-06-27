@@ -92,25 +92,28 @@ namespace pokemonGodot.Scripts.Gameplay
 
 			var (adjustedTargetPosition, result) = GetTargetColliders(targetPosition);
 			
-			if (result.Count > 0)
+			if (result.Count == 0)
 			{
-				foreach (var collision in result)
-				{
-					var collider = (Node)(GodotObject)collision["collider"];
-					var colliderType = collider.GetType().Name;
+				return false;
+			}
+			else if (result.Count == 1)
+			{
+				var collider = (Node)(GodotObject)result[0]["collider"];
+				var colliderType = collider.GetType().Name;
 
-					return colliderType switch
+				return colliderType switch
 					{
 						"Sign" => true,
 						"TileMapLayer" => GetTileMapLayerCollision((TileMapLayer)collider, adjustedTargetPosition),
 						"SceneTrigger" => false,
 						_ => true
 					};
-				}
-
 			}
-			
-			return false;
+			else
+			{
+				return true; 
+			}
+
 		}
 
 		public bool GetTileMapLayerCollision(TileMapLayer tileMapLayer, Vector2 adjustedTargetPosition)
@@ -178,7 +181,7 @@ namespace pokemonGodot.Scripts.Gameplay
 
 			TargetPosition = Character.Position + CharacterInput.Direction.ToVector2() * Globals.Instance.GRID_SIZE;
 			
-			if (!IsMoving() && !IsTargetOccupied(TargetPosition))
+			if (!IsMoving() && !IsTargetOccupied(TargetPosition) && SceneManager.GetCurrentLevel().ReserveTile(TargetPosition))
 			{
 
 				EmitSignal(SignalName.Animation, "walk");
@@ -239,6 +242,7 @@ namespace pokemonGodot.Scripts.Gameplay
 
 		public void StopMoving()
 		{
+			SceneManager.GetCurrentLevel().ReleaseTile(TargetPosition);
 			IsWalking = false;
 			IsJumping = false;
 			Progress = 0f;

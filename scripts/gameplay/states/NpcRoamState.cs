@@ -92,17 +92,17 @@ namespace pokemonGodot.Scripts.Gameplay.States
 			NpcInput.Direction = AllDirections[randomIndex];
 
 			// LookAround : on tourne sur place, on n'émet PAS Walk mais Turn
-            NpcInput.EmitSignal(CharacterInput.SignalName.Turn);
-        }
+			NpcInput.EmitSignal(CharacterInput.SignalName.Turn);
+		}
 
-        // Privée car seul NpcRoamState en a besoin.
-        // Principe YAGNI : si un autre système en a besoin un jour, on extrait à ce moment-là.
-        private static Direction DirectionToward(Vector2 from, Vector2 to)
-        {
-            Vector2 diff = to - from;
-            if (Mathf.Abs(diff.X) >= Mathf.Abs(diff.Y))
-                return diff.X > 0 ? Direction.Right : Direction.Left;
-            return diff.Y > 0 ? Direction.Down : Direction.Up;
-        }
-    }
+		// Privée car seul NpcRoamState en a besoin.
+		// Principe YAGNI : si un autre système en a besoin un jour, on extrait à ce moment-là.
+		private static Direction DirectionToward(Vector2 from, Vector2 to)
+		{
+			Vector2 diff = to - from;
+			if (Mathf.Abs(diff.X) >= Mathf.Abs(diff.Y))
+				return diff.X > 0 ? Direction.Right : Direction.Left;
+			return diff.Y > 0 ? Direction.Down : Direction.Up;
+		}
+	}
 }
