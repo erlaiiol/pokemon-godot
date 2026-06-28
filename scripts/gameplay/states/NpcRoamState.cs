@@ -1,6 +1,8 @@
 using Godot;
+using Godot.Collections;
 using pokemonGodot.Scripts.Core;
 using pokemonGodot.Scripts.Core.Enums;
+using pokemonGodot.Scripts.Gameplay.Levels;
 using pokemonGodot.Scripts.Utilities;
 
 namespace pokemonGodot.Scripts.Gameplay.States
@@ -13,11 +15,23 @@ namespace pokemonGodot.Scripts.Gameplay.States
 
 		private double _timer = 0;
 
-		// Tutoriel : tableau de directions. AVANT c'était Vector2[] { Vector2.Up, ... }
-		// APRÈS : on utilise notre enum — le compilateur garantit qu'on ne peut pas mettre
-		// une valeur invalide, et le switch dans ToVector2() fait la conversion au moment voulu
 		private static readonly Direction[] AllDirections =
 			[Direction.Up, Direction.Down, Direction.Left, Direction.Right];
+
+		// État interne du mode Patrol : chemin A* courant et position dans ce chemin.
+		// Réinitialisés dans EnterState() pour recalculer depuis la position actuelle
+		// après toute interruption (message du joueur, changement de scène, etc.).
+		private Array<Vector2I> _patrolPath = [];
+		private int _patrolPathIndex = 0;
+
+		// Appelé par StateMachine.ChangeState() à chaque entrée dans cet état.
+		// Garantit que le Patrol repart toujours d'un chemin frais depuis la position snappée.
+		public override void EnterState()
+		{
+			base.EnterState();
+			_patrolPath = [];
+			_patrolPathIndex = 0;
+		}
 
 		public override void _Process(double delta)
 		{
@@ -49,8 +63,6 @@ namespace pokemonGodot.Scripts.Gameplay.States
 				bool directionChanged = NpcInput.Direction != randomDir;
 				NpcInput.Direction = randomDir;
 
-				// Si le NPC change de direction, il tourne d'abord (comme dans Pokémon)
-				// Si même direction, il marche directement sans tour intermédiaire
 				if (directionChanged)
 					NpcInput.EmitSignal(CharacterInput.SignalName.Turn);
 				else
@@ -60,26 +72,82 @@ namespace pokemonGodot.Scripts.Gameplay.States
 
 		private void HandlePatrol()
 		{
-			if (_timer < NpcInput.Config.PatrolMoveInterval) return;
 			if (NpcInput.Config.PatrolPoints == null || NpcInput.Config.PatrolPoints.Count == 0) return;
-			_timer = 0;
 
-			Vector2 target = NpcInput.Config.PatrolPoints[NpcInput.Config.PatrolIndex];
-			Vector2 current = CharacterMovement.Character.GlobalPosition;
+			// Chemin épuisé ou pas encore calculé : en calculer un vers le prochain patrol point.
+			if (_patrolPath.Count == 0)
+			{
+				Vector2 target = NpcInput.Config.PatrolPoints[NpcInput.Config.PatrolIndex];
+				_patrolPath = ComputePatrolPath(CharacterMovement.Character.GlobalPosition, target);
+				_patrolPathIndex = 1; // Index 0 = position actuelle, déjà occupée.
 
-			Direction neededDirection = DirectionToward(current, target);
+				if (_patrolPath.Count <= 1)
+				{
+					// Déjà sur la cible ou cible inatteignable : passer au point suivant.
+					AdvancePatrolIndex();
+					_patrolPath = [];
+					return;
+				}
+			}
+
+			if (_timer < NpcInput.Config.PatrolMoveInterval) return;
+
+			Vector2I currentCell = WorldToCell(CharacterMovement.Character.GlobalPosition);
+			Vector2I nextCell = _patrolPath[_patrolPathIndex];
+
+			// Cas résiduel : déjà sur la prochaine case attendue.
+			if (currentCell == nextCell)
+			{
+				_patrolPathIndex++;
+				if (_patrolPathIndex >= _patrolPath.Count) { AdvancePatrolIndex(); _patrolPath = []; }
+				return;
+			}
+
+			Direction neededDirection = CellDirection(currentCell, nextCell);
 			bool directionChanged = NpcInput.Direction != neededDirection;
 			NpcInput.Direction = neededDirection;
 
+			// Turn d'abord : on reset le timer pour laisser le temps à l'animation.
 			if (directionChanged)
-				NpcInput.EmitSignal(CharacterInput.SignalName.Turn);
-			else
-				NpcInput.EmitSignal(CharacterInput.SignalName.Walk);
-
-			if (current.DistanceTo(target) < Globals.Instance.GRID_SIZE)
 			{
-				NpcInput.Config.PatrolIndex =
-					(NpcInput.Config.PatrolIndex + 1) % NpcInput.Config.PatrolPoints.Count;
+				_timer = 0;
+				NpcInput.EmitSignal(CharacterInput.SignalName.Turn);
+				return;
+			}
+
+			NpcInput.EmitSignal(CharacterInput.SignalName.Walk);
+
+			if (!CharacterMovement.IsMoving())
+			{
+				// Walk refusé par StartMoving() : case cible occupée.
+				// On identifie le bloqueur pour choisir le comportement.
+				var (_, collisions) = CharacterMovement.GetTargetColliders(CharacterMovement.TargetPosition);
+				foreach (var collision in collisions)
+				{
+					var blocker = (Node)(GodotObject)collision["collider"];
+					if (blocker.GetType().Name == "Player")
+					{
+						// Joueur dynamique : attendre qu'il libère la case.
+						// On impose un délai minimum de 0.5s avant la prochaine tentative,
+						// quel que soit PatrolMoveInterval, pour éviter de boucler chaque frame.
+						_timer = NpcInput.Config.PatrolMoveInterval - 0.5f;
+						return;
+					}
+				}
+				// Obstacle statique inattendu (autre NPC arrivé entre-temps, etc.) :
+				// le chemin A* est obsolète, on le recalcule depuis la position actuelle.
+				_patrolPath = [];
+				return;
+			}
+
+			// Walk accepté : on avance dans le chemin et on réinitialise le timer.
+			_timer = 0;
+			_patrolPathIndex++;
+
+			if (_patrolPathIndex >= _patrolPath.Count)
+			{
+				AdvancePatrolIndex();
+				_patrolPath = [];
 			}
 		}
 
@@ -91,17 +159,39 @@ namespace pokemonGodot.Scripts.Gameplay.States
 			int randomIndex = Globals.GetRandomNumberGenerator().RandiRange(0, AllDirections.Length - 1);
 			NpcInput.Direction = AllDirections[randomIndex];
 
-			// LookAround : on tourne sur place, on n'émet PAS Walk mais Turn
 			NpcInput.EmitSignal(CharacterInput.SignalName.Turn);
 		}
 
-		// Privée car seul NpcRoamState en a besoin.
-		// Principe YAGNI : si un autre système en a besoin un jour, on extrait à ce moment-là.
-		private static Direction DirectionToward(Vector2 from, Vector2 to)
+		private void AdvancePatrolIndex()
 		{
-			Vector2 diff = to - from;
-			if (Mathf.Abs(diff.X) >= Mathf.Abs(diff.Y))
-				return diff.X > 0 ? Direction.Right : Direction.Left;
+			NpcInput.Config.PatrolIndex =
+				(NpcInput.Config.PatrolIndex + 1) % NpcInput.Config.PatrolPoints.Count;
+		}
+
+		// Calcule le chemin A* entre deux positions monde via la grille du niveau courant.
+		// GetIdPath inclut la cellule de départ (index 0) et la cible (dernier index).
+		// Retourne un tableau vide si la cible est inatteignable.
+		private static Array<Vector2I> ComputePatrolPath(Vector2 from, Vector2 to)
+		{
+			Level level = SceneManager.GetCurrentLevel();
+			if (level?.Grid == null) return [];
+
+			return level.Grid.GetIdPath(WorldToCell(from), WorldToCell(to));
+		}
+
+		// Position monde (pixels) → cellule grille.
+		// Les positions NPC sont toujours des multiples de GRID_SIZE après StopMoving().
+		private static Vector2I WorldToCell(Vector2 worldPos) => new(
+			Mathf.FloorToInt(worldPos.X / Globals.Instance.GRID_SIZE),
+			Mathf.FloorToInt(worldPos.Y / Globals.Instance.GRID_SIZE)
+		);
+
+		// Direction cardinale entre deux cellules adjacentes.
+		// A* Manhattan sans diagonale garantit que diff vaut toujours (±1,0) ou (0,±1).
+		private static Direction CellDirection(Vector2I from, Vector2I to)
+		{
+			Vector2I diff = to - from;
+			if (diff.X != 0) return diff.X > 0 ? Direction.Right : Direction.Left;
 			return diff.Y > 0 ? Direction.Down : Direction.Up;
 		}
 	}

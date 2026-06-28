@@ -41,7 +41,7 @@ namespace pokemonGodot.Scripts.Gameplay.Levels
 		// Called every frame. 'delta' is the elapsed time since the previous frame.
 		public override void _Process(double delta)
 		{
-			if (Grid == null && GameManager.GetPlayer != null)
+			if (Grid == null && GameManager.GetPlayer() != null)
 			{
 				SetupGrid();
 			}
@@ -70,24 +70,33 @@ namespace pokemonGodot.Scripts.Gameplay.Levels
 
 		var mapHeight = Bottom / Globals.Instance.GRID_SIZE;
 		var mapWidth = Right / Globals.Instance.GRID_SIZE;
+		var movement = GameManager.GetPlayer().GetNode<CharacterMovement>("Movement");
+		float half = Globals.Instance.GRID_SIZE / 2f;
 
 		for (int y = 0; y < mapHeight; y++)
 			{
 				for (int x = 0; x < mapWidth; x++)
 				{
 					Vector2I cell = new(x, y);
-					Vector2 worldPosition = new(x * Globals.Instance.GRID_SIZE, y * Globals.Instance.GRID_SIZE);
+					// On query au CENTRE de la tile, pas au coin, pour éviter de détecter
+					// les corps physiques des tiles adjacentes sur les frontières communes.
+					Vector2 queryPosition = new(x * Globals.Instance.GRID_SIZE + half, y * Globals.Instance.GRID_SIZE + half);
 
-					var (_, collisions) = GameManager.GetPlayer().GetNode<CharacterMovement>("Movement").GetTargetColliders(worldPosition);
+					var (_, collisions) = movement.GetTargetColliders(queryPosition);
 
 					foreach (var collision in collisions)
 					{
 						var collider = (Node)(GodotObject)collision["collider"];
 						var colliderType = collider.GetType().Name;
 
-						if (colliderType == "TallGrass")
-						{
+						if (colliderType is "TallGrass" or "Player" or "SceneTrigger")
 							continue;
+
+						if (colliderType == "Npc")
+						{
+							var npcMovement = ((Npc)collider).NpcInputConfig.NpcMovementType;
+							if (npcMovement is NpcMovementType.Patrol or NpcMovementType.Wander)
+								continue;
 						}
 
 						Grid.SetPointSolid(cell, true);
